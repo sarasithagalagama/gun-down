@@ -8,9 +8,22 @@ def validate_args():
     Returns: rows, cols, hidden_count, cheat_mode
     """
     args = sys.argv
+    
+    # --- HELP MENU (Added for Assignment Requirement) ---
+    if len(args) > 1 and args[1].lower() == "help":
+        print("\n--- GunDown Help ---")
+        print("Goal: Find hidden objects on the grid.")
+        print("Rules: Guess locations based on the grid numbers.")
+        print("Usage: python gundown.py [GridSize] [HiddenCount]")
+        print("Example: python gundown.py 3x3 3")
+        sys.exit()
+    # ----------------------------------------------------
+
     # Check minimum arguments
     if len(args) < 3:
-        print("Error: Missing arguments. Usage: gundown [Grid] [Hidden] (show)")
+        print("Error: Missing arguments.")
+        print("Usage: python gundown.py [Grid] [Hidden] (show)")
+        print("Try 'python gundown.py help' for more info.")
         sys.exit()
 
     # Parse Grid Size (e.g., "3x3")
@@ -28,18 +41,18 @@ def validate_args():
         print("Error: Dimensions and hidden count must be integers.")
         sys.exit()
 
-    # Validate Grid Rules (Min 3x3, Max 5x5)
+    # Validate Grid Rules (Min 3x3, Max 5x5) [cite: 70]
     if not (3 <= rows <= 5 and 3 <= cols <= 5):
         print("Error: Grid size must be between 3x3 and 5x5.")
         sys.exit()
 
-    # Validate Hidden Count Rules (Min 2, Max half of cells)
+    # Validate Hidden Count Rules (Min 2, Max half of cells) [cite: 71]
     max_hidden = (rows * cols) // 2
     if hidden_count < 2 or hidden_count > max_hidden:
-        print(f"Error: Hidden objects must be between 2 and {max_hidden}.")
+        print(f"Error: For a {rows}x{cols} grid, hidden objects must be between 2 and {max_hidden}.")
         sys.exit()
 
-    # Check for Cheat Mode
+    # Check for Cheat Mode [cite: 171]
     cheat_mode = False
     if len(args) > 3 and args[3].lower() == "show":
         cheat_mode = True
@@ -54,13 +67,13 @@ def save_result(hidden_locs, found_locs, score_pct, cheat_mode):
     date_str = now.strftime("%Y-%m-%d")
     time_str = now.strftime("%H:%M")
     
-    # Generate filename: YYYYMMDD HHMM RRRR.txt
+    # Generate filename: YYYYMMDD HHMM RRRR.txt [cite: 160]
     file_ts = now.strftime("%Y%m%d %H%M")
     rand_code = random.randint(1000, 9999)
     filename = f"{file_ts} {rand_code}"
     
     if cheat_mode:
-        filename += "C"
+        filename += "C"  # [cite: 174]
     filename += ".txt"
 
     # Write content
@@ -100,7 +113,7 @@ def play_game():
         row_display = []
         for c in range(cols):
             num = grid_nums[r * cols + c]
-            # Cheat mode: Show empty space if hidden
+            # Cheat mode: Show empty space if hidden [cite: 173]
             if cheat_mode and num in hidden_locs:
                 row_display.append(" ") 
             else:
@@ -115,6 +128,7 @@ def play_game():
     for i in range(hidden_count):
         while True:
             try:
+                # Prompt user [cite: 108]
                 g = int(input(f"Guess hidden object location {i+1} of {hidden_count}: "))
                 if 1 <= g <= total_cells:
                     guesses.append(g)
@@ -130,9 +144,9 @@ def play_game():
     final_grid_display = []
     for num in grid_nums:
         if num in found_locs:
-            final_grid_display.append("X") # Hit
+            final_grid_display.append("X") # Hit [cite: 120]
         elif num in hidden_locs:
-            final_grid_display.append("H") # Missed Hidden
+            final_grid_display.append("H") # Missed Hidden [cite: 117]
         else:
             final_grid_display.append(str(num)) # Empty
 
